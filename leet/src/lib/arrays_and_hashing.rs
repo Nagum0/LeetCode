@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use core::num;
 use std::{collections::{HashMap, HashSet}, hash::Hash};
 
 /// # Contains Duplicate - Easy
@@ -138,4 +139,74 @@ pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
 		}
 		acc
 	})
+}
+
+/// # Product of Array Except Self
+/// 
+/// Input: nums = [1,2,3,4]
+/// Output: [24,12,8,6]
+/// 
+/// Input: nums = [-1,1,0,-3,3]
+/// Output: [0,0,9,0,0]
+pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+	let mut result: Vec<i32> = Vec::new();
+
+	let mut prefix: i32 = 1;
+	for i in &nums {
+		result.push(prefix);
+		prefix *= i;
+	}
+
+	let mut postfix: i32 = 1;
+	for i in (0..nums.len()).rev() {
+		result[i] *= postfix;
+		postfix *= nums[i];
+	}
+
+	result
+}
+
+/// # Longest Consecutive Sequence
+/// 
+/// Input: nums = [100,4,200,1,3,2]
+/// Output: 4
+/// 
+/// Input: nums = [0,3,7,2,5,8,4,6,0,1]
+/// Output: 9
+pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
+	let sorted_nums: Vec<i32> = counting_sort(&nums);
+
+	let mut n = sorted_nums[0];
+	for i in sorted_nums {
+		if i == n {
+			n += 1;
+		}
+		else {
+			break;
+		}
+	}
+
+	n - 1
+}
+
+fn counting_sort(nums: &Vec<i32>) -> Vec<i32> {
+	let n = nums.len();
+	let m = *nums.iter().max().unwrap() as usize;
+	let mut count_vec: Vec<usize> = vec![0; m + 1];
+
+	for i in 0..n {
+		count_vec[nums[i] as usize] += 1;
+	}
+
+	for i in 1..m + 1 {
+		count_vec[i] += count_vec[i - 1];
+	}
+
+	let mut output_vec: Vec<i32> = vec![0; n];
+	for i in (0..n).rev() {
+		output_vec[count_vec[nums[i] as usize] - 1] = nums[i];
+		count_vec[nums[i] as usize] -= 1;
+	}
+
+	output_vec
 }

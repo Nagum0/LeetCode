@@ -1,11 +1,9 @@
 use leetlib::arrays_and_hashing::*;
 
 fn main() {
-	let nums = vec![1,1,1,2,2,3];
-	let k = 2;
-	println!("{:?}", top_k_frequent(nums, k));
-
-	let nums = vec![1];
-	let k = 1;
-	println!("{:?}", top_k_frequent(nums, k));
+	let nums: Vec<i32> = vec![100,4,200,1,3,2];
+	println!("{}", longest_consecutive(nums));
+	
+	let nums: Vec<i32> = vec![0,3,7,2,5,8,4,6,0,1];
+	println!("{}", longest_consecutive(nums));
 }
