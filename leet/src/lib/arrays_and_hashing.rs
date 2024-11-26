@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use core::num;
-use std::{collections::{HashMap, HashSet}, hash::Hash};
+use std::{collections::{HashMap, HashSet}, f64::consts::SQRT_2, hash::Hash};
 
 /// # Contains Duplicate - Easy
 /// 
@@ -173,40 +173,60 @@ pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
 /// 
 /// Input: nums = [0,3,7,2,5,8,4,6,0,1]
 /// Output: 9
+/// 
+/// 977 ms
 pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
-	let sorted_nums: Vec<i32> = counting_sort(&nums);
+	let nums_set: HashSet<i32> = nums.iter().fold(HashSet::new(), |mut acc, i| {
+		acc.insert(*i);
+		acc
+	});
 
-	let mut n = sorted_nums[0];
-	for i in sorted_nums {
-		if i == n {
-			n += 1;
-		}
-		else {
-			break;
+	let mut sequence_length = 0;
+
+	for i in nums {
+		if !nums_set.contains(&(i - 1)) {
+			let mut n = i;
+			let mut seq_length = 1;
+			
+			while nums_set.contains(&(n + 1)) {
+				n += 1;
+				seq_length += 1;
+			}
+
+			if seq_length > sequence_length {
+				sequence_length = seq_length;
+			}
 		}
 	}
 
-	n - 1
+	sequence_length
 }
 
-fn counting_sort(nums: &Vec<i32>) -> Vec<i32> {
-	let n = nums.len();
-	let m = *nums.iter().max().unwrap() as usize;
-	let mut count_vec: Vec<usize> = vec![0; m + 1];
-
-	for i in 0..n {
-		count_vec[nums[i] as usize] += 1;
+/// [1,2,0,1]
+/// [0, 1, 1, 2]
+pub fn longest_consecutive_2(mut nums: Vec<i32>) -> i32 {
+	if nums.len() < 2 {
+		return nums.len() as i32;
 	}
 
-	for i in 1..m + 1 {
-		count_vec[i] += count_vec[i - 1];
+	nums.sort();
+
+	let mut c = 1;
+	let mut longest_consecutive = 1;
+
+	for i in 1..nums.len() {
+		let n = nums[i];
+		let m = nums[i - 1];
+
+		match n - m {
+			1 => c += 1,
+			0 => longest_consecutive = std::cmp::max(c, longest_consecutive),
+			_ => {
+				longest_consecutive = std::cmp::max(c, longest_consecutive);
+				c = 1;
+			},
+		}
 	}
 
-	let mut output_vec: Vec<i32> = vec![0; n];
-	for i in (0..n).rev() {
-		output_vec[count_vec[nums[i] as usize] - 1] = nums[i];
-		count_vec[nums[i] as usize] -= 1;
-	}
-
-	output_vec
+	std::cmp::max(c, longest_consecutive)
 }
